@@ -4,11 +4,13 @@ import express, { json, urlencoded } from "express";
 import dotenv from "dotenv";
 dotenv.config({});
 import connectDB from "./Connection/db.js";
+import userRoute from "./routes/route.js";
+
 const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(json());
-app.use(urlencoded({extended:true}));
+app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
 const corsOptions = {
@@ -18,6 +20,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.use("/api/v1/user" , userRoute);
 
 app.listen(PORT , () => {
     connectDB(),

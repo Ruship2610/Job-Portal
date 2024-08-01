@@ -1,17 +1,17 @@
-import User from "../Models/user.model";
+import User from "../Models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
   try {
-    const body = req.body;
+    const {fullname,email,phoneNumber,password,role} = req.body;
 
     if (
-      !body.fullname ||
-      !body.email ||
-      !body.phoneNumber ||
-      !body.password ||
-      !body.role
+      !fullname ||
+      !email ||
+      !phoneNumber ||
+      !password ||
+      !role
     ) {
       return res.status(400).json({
         message: "All fields are required",
@@ -19,7 +19,7 @@ const register = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({email});
     if (user) {
       return res.status(400).json({
         meassage: "User already exist with this email",
@@ -27,7 +27,7 @@ const register = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
       fullname,
@@ -46,11 +46,11 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
 
-    if (!body.email || !body.password || !body.role) {
+    if (!email || !password || !role) {
       return res.status(400).json({
         message: "All fields are required",
         success: false,
@@ -83,7 +83,6 @@ const login = async (req, res) => {
 
     const tokenData = {
       userId: user._id,
-      email: user.email,
     };
 
     const token = await jwt.sign(tokenData, process.env.SEKCRET_KEY, {
@@ -116,7 +115,7 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     return res.status(200).cookie("token", "", { maxAge: 0 }).json({
       message: "Logged out",
@@ -127,7 +126,7 @@ const logout = async (req, res) => {
   }
 };
 
-const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
     const file = req.file;
@@ -180,4 +179,4 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, updateProfile };
+// module.exports = { register, login, logout, updateProfile };
