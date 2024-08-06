@@ -4,22 +4,16 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
-    const {fullname,email,phoneNumber,password,role} = req.body;
+    const { fullname, email, phoneNumber, password, role } = req.body;
 
-    if (
-      !fullname ||
-      !email ||
-      !phoneNumber ||
-      !password ||
-      !role
-    ) {
+    if (!fullname || !email || !phoneNumber || !password || !role) {
       return res.status(400).json({
         message: "All fields are required",
         success: false,
       });
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({
         meassage: "User already exist with this email",
@@ -85,7 +79,7 @@ export const login = async (req, res) => {
       userId: user._id,
     };
 
-    const token = await jwt.sign(tokenData, process.env.SEKCRET_KEY, {
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
 
@@ -129,36 +123,39 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
-    const file = req.file;
 
-    if (!fullname || !email || !phoneNumber || !bio || !skills) {
-      return res.status(400).json({
-        message: "All fields are required",
-        success: false,
-      });
+    // const file = req.file;
+    // // cloudinary ayega idhar
+    // const fileUri = getDataUri(file);
+    // const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+    let skillsArray;
+    if (skills) {
+      skillsArray = skills.split(",");
     }
-
-    const skillsArray = skills.split(",");
-
-    const userId = req.id;
+    const userId = req.id; // middleware authentication
     let user = await User.findById(userId);
 
     if (!user) {
       return res.status(400).json({
-        message: "user not found",
-        success: true,
+        message: "User not found.",
+        success: false,
       });
     }
+    // updating data
+    if (fullname) user.fullname = fullname;
+    if (email) user.email = email;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (bio) user.profile.bio = bio;
+    if (skills) user.profile.skills = skillsArray;
 
-    //data updation
+    // resume comes later here...
+    // if(cloudResponse){
+    //     user.profile.resume = cloudResponse.secure_url // save the cloudinary url
+    //     user.profile.resumeOriginalName = file.originalname // Save the original file name
+    // }
 
-    (user.fullname = fullname),
-      (user.email = email),
-      (user.phoneNumber = phoneNumber),
-      (user.bio = bio),
-      (user.profile.skills = skillsArray),
-
-      await user.save();
+    await user.save();
 
     user = {
       _id: user._id,
@@ -170,12 +167,12 @@ export const updateProfile = async (req, res) => {
     };
 
     return res.status(200).json({
-      message: "updated successfully",
+      message: "Profile updated successfully.",
       user,
       success: true,
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 

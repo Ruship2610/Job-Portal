@@ -4,7 +4,10 @@ import express, { json, urlencoded } from "express";
 import dotenv from "dotenv";
 dotenv.config({});
 import connectDB from "./Connection/db.js";
-import userRoute from "./routes/route.js";
+import userRoute from "./routes/userRoute.js";
+import companyRoute from "./routes/companyRoute.js";
+import jobRoute from "./routes/jobRoute.js";
+import applicationRoute from "./routes/applicationRoute.js";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -21,6 +24,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/api/v1/user" , userRoute);
+app.use("/api/v1/company" , companyRoute);
+app.use("/api/v1/job" , jobRoute);
+app.use("/api/v1/application", applicationRoute)
 
 app.listen(PORT , () => {
     connectDB(),

@@ -7,6 +7,6 @@ import isAuthenticated from "../middlewares/authentication.js";
 router.post("/register" , register );
 router.post("/login" , login);
 router.post("/profile/update" , isAuthenticated , updateProfile);
-router.post("/logout" , logout);
+router.patch("/logout" , logout);
 
 export default router;

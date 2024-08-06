@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const applicationSchema = new mongoose.Schema({
     job : {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "Company",
+        ref : "Job",
         required : true,
     },
     applicant : {
@@ -19,6 +19,6 @@ const applicationSchema = new mongoose.Schema({
     },
 },{timestamps:true});
 
-const Apllication = new mongoose.model("Application",applicationSchema);
+const Application = new mongoose.model("Application",applicationSchema);
 
-export default Apllication;
+export default Application;
